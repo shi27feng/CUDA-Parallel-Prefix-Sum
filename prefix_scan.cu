@@ -105,21 +105,21 @@ void blockPrescan(int *g_idata, int *g_odata, int n, int *SUM)
 	int offset = 1;
 	int blockOffset = BLOCK_SIZE * blockIdx.x * 2;
 
-//	 Copy the correct elements form the global array
+// Copy the correct elements form the global array
 	if (blockOffset + (thid * 2) < n){
 		temp[thid * 2] = g_idata[blockOffset + (thid * 2)];
 	}
 	if (blockOffset + (thid * 2) + 1 < n){
-		temp[(thid * 2)+1] = g_idata[blockOffset + (thid * 2)+1];
+		temp[(thid * 2) + 1] = g_idata[blockOffset + (thid * 2) + 1];
 	}
 
-//	 Build sum in place up the tree
+// Build sum in place up the tree
 	for (int d = BLOCK_SIZE; d > 0; d >>= 1){
 		__syncthreads();
 
 		if (thid < d){
-			int ai = offset*((thid * 2)+1)-1;
-			int bi = offset*((thid * 2)+2)-1;
+			int ai = offset * ((thid * 2) + 1) - 1;
+			int bi = offset * ((thid * 2) + 2) - 1;
 			temp[bi] += temp[ai];
 		}
 		offset <<= 1;
@@ -139,8 +139,8 @@ void blockPrescan(int *g_idata, int *g_odata, int n, int *SUM)
 		__syncthreads();
 
 		if (thid < d){
-			int ai = offset*((thid * 2)+1)-1;
-			int bi = offset*((thid * 2)+2)-1;
+			int ai = offset * ((thid * 2) + 1) - 1;
+			int bi = offset * ((thid * 2) + 2) - 1;
 
 			int t = temp[ai];
 			temp[ai] = temp[bi];
@@ -321,10 +321,11 @@ void fullPrescan(int *h_x, int *h_y, int numElements) {
 __global__
 void BCAO_blockPrescan(int *g_idata, int *g_odata, int n, int *SUM)
 {
-	__shared__ int temp[BLOCK_SIZE * 2 + (BLOCK_SIZE)]; // allocated on invocation
+	// __shared__ int temp[BLOCK_SIZE * 2 + (BLOCK_SIZE)]; // allocated on invocation
+	__shared__ int temp[BLOCK_SIZE * 3]; // allocated on invocation
 	int thid = threadIdx.x;
 	int offset = 1;
-	int blockOffset = BLOCK_SIZE * blockIdx.x * 2;
+	int blockOffset = (2 * BLOCK_SIZE) * blockIdx.x;
 
 	// Create the correct offsets for BCAO
 	int ai = thid;
@@ -346,8 +347,8 @@ void BCAO_blockPrescan(int *g_idata, int *g_odata, int n, int *SUM)
 		__syncthreads();
 
 		if (thid < d){
-			int ai = offset*(2*thid+1)-1;
-			int bi = offset*(2*thid+2)-1;
+			int ai = offset * (2 * thid + 1) - 1;
+			int bi = offset * (2 * thid + 2) - 1;
 
 			ai += CONFLICT_FREE_OFFSET(ai);
 			bi += CONFLICT_FREE_OFFSET(bi);
@@ -371,8 +372,8 @@ void BCAO_blockPrescan(int *g_idata, int *g_odata, int n, int *SUM)
 		__syncthreads();
 
 		if (thid < d){
-			int ai = offset*(2*thid+1)-1;
-			int bi = offset*(2*thid+2)-1;
+			int ai = offset * (2 * thid + 1) - 1;
+			int bi = offset * (2 * thid + 2) - 1;
 
 			ai += CONFLICT_FREE_OFFSET(ai);
 			bi += CONFLICT_FREE_OFFSET(bi);
