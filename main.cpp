@@ -2,10 +2,9 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
-#include <helper_functions.h>
 #include <math.h>
 
-#include "SumPrescan.cu"
+#include "prefix_scan.cu"
 
 // Compares two arrays and outputs if they match or prints the first element that failed the check otherwise
 bool compareArrays(int *array1, int *array2, int numElements) {
